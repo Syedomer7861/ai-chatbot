@@ -1,0 +1,19 @@
+<ai-chatbot-widget 
+  data-shop="{{ shop.permanent_domain }}"
+  data-primary-color="{{ block.settings.primary_color }}"
+  data-bot-name="{{ block.settings.bot_name }}"
+  data-css-url="{{ 'chatbot.css' | asset_url }}"
+></ai-chatbot-widget>
+
+<script src="{{ 'chatbot.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "AI Chatbot",
+  "target": "section",
+  "settings": [
+    { "type": "color", "id": "primary_color", "label": "Primary Color", "default": "#000000" },
+    { "type": "text", "id": "bot_name", "label": "Bot Name", "default": "AI Assistant" }
+  ]
+}
+{% endschema %}
