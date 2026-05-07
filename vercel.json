@@ -1,6 +1,5 @@
 {
   "buildCommand": "prisma generate && npm run build",
   "installCommand": "npm install",
-  "framework": "remix",
   "regions": ["cle1"]
 }
