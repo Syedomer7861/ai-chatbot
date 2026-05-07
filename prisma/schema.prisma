@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.sqlite"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Session {
@@ -46,6 +46,16 @@ model AppSettings {
   shop        String   @id
   botName     String   @default("AI Assistant")
   botPersona  String   @default("A helpful shopping assistant.")
+  demoMode    Boolean  @default(false)
   lastSynced  DateTime?
   updatedAt   DateTime @updatedAt
+}
+model Lead {
+  id        String   @id @default(uuid())
+  shop      String
+  email     String
+  context   String?  // Optional context about what they were asking
+  createdAt DateTime @default(now())
+
+  @@index([shop])
 }

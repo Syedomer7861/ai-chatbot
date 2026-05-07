@@ -24,7 +24,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     create: { shop },
   });
 
-  return { knowledgeCount, settings };
+  return { knowledgeCount, settings, shop };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -33,17 +33,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const botName = formData.get("botName") as string;
   const botPersona = formData.get("botPersona") as string;
+  const demoMode = formData.get("demoMode") === "true";
 
   await db.appSettings.update({
     where: { shop },
-    data: { botName, botPersona },
+    data: { botName, botPersona, demoMode },
   });
 
   return { success: true };
 };
 
 export default function Index() {
-  const { knowledgeCount, settings } = useLoaderData<typeof loader>();
+  const { knowledgeCount, settings, shop } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
 
   return (
@@ -65,6 +66,18 @@ export default function Index() {
                     {fetcher.state !== "idle" ? "Syncing..." : "Sync Now"}
                   </button>
                 </fetcher.Form>
+                <a 
+                  href="/app/knowledge" 
+                  style={{ textDecoration: "none", color: "#008060", fontSize: "14px", fontWeight: "600" }}
+                >
+                  Manage Custom Knowledge →
+                </a>
+                <a 
+                  href="/app/leads" 
+                  style={{ textDecoration: "none", color: "#008060", fontSize: "14px", fontWeight: "600" }}
+                >
+                  View Captured Leads →
+                </a>
                 {settings.lastSynced && (
                   <span style={{ fontSize: "12px", color: "#666" }}>
                     Last synced: {new Date(settings.lastSynced).toLocaleString()}
@@ -100,6 +113,18 @@ export default function Index() {
                     />
                   </ui-box>
 
+                  <ui-box>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <input 
+                        type="checkbox" 
+                        name="demoMode" 
+                        value="true"
+                        defaultChecked={settings.demoMode}
+                      />
+                      <label>Enable Reviewer Demo Mode (Simulates premium features for App Store review)</label>
+                    </div>
+                  </ui-box>
+
                   <button 
                     type="submit" 
                     style={{ background: "#008060", color: "white", border: "none", padding: "10px 16px", borderRadius: "4px", cursor: "pointer", alignSelf: "flex-start" }}
@@ -108,6 +133,20 @@ export default function Index() {
                   </button>
                 </div>
               </fetcher.Form>
+            </div>
+          </ui-card>
+        </ui-layout-section>
+
+        <ui-layout-section>
+          <ui-card>
+            <div style={{ padding: "16px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "8px", color: "#bf0711" }}>Reviewer Support</h2>
+              <p style={{ fontSize: "14px", marginBottom: "12px" }}>If you are a Shopify App Reviewer, please use the following credentials for testing:</p>
+              <ul style={{ fontSize: "13px", paddingLeft: "20px" }}>
+                <li><strong>Test Store:</strong> {shop}</li>
+                <li><strong>Lead Capture:</strong> Type "I want to talk to a human" in the chat to see the email capture flow.</li>
+                <li><strong>Product Cards:</strong> Ask "Show me some products" to see the rich card UI.</li>
+              </ul>
             </div>
           </ui-card>
         </ui-layout-section>

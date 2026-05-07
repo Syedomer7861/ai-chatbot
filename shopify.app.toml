@@ -1,47 +1,22 @@
-# This file stores configurations for your Shopify app.
-client_id = ""
+# Master Configuration for CodeCrest_AIChatBot
+client_id = "708b332fafb83cdf9816ec531b2c4e6d"
+name = "CodeCrest_AIChatBot"
+application_url = "https://shopify.dev/apps/default-app-home"
+embedded = true
 
-[access_scopes]
-# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products,read_products,read_content"
+[build]
+automatically_update_urls_on_dev = true
 
 [webhooks]
-api_version = "2025-10"
+api_version = "2026-07"
 
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/app/uninstalled"
-  topics = ["app/uninstalled"]
+[access_scopes]
+scopes = "read_products,read_content"
 
-  [[webhooks.subscriptions]]
-  topics = [ "app/scopes_update" ]
-  uri = "/webhooks/app/scopes_update"
+[auth]
+redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]
 
-  [[webhooks.subscriptions]]
-  topics = ["products/create", "products/update", "products/delete"]
-  uri = "/webhooks/app/products"
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/gdpr"
-  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
-
-  # Webhooks can have filters
-  # Only receive webhooks for product updates with a product price >= 10.00
-  # See: https://shopify.dev/docs/apps/build/webhooks/customize/filters
-  # [[webhooks.subscriptions]]
-  # topics = ["products/update"]
-  # uri = "/webhooks/products/update"
-  # filter = "variants.price:>=10.00"
-
-  # Mandatory compliance topic for public apps only
-  # See: https://shopify.dev/docs/apps/build/privacy-law-compliance
-  # [[webhooks.subscriptions]]
-  # uri = "/webhooks/customers/data_request"
-  # compliance_topics = ["customers/data_request"]
-
-  # [[webhooks.subscriptions]]
-  # uri = "/webhooks/customers/redact"
-  # compliance_topics = ["customers/redact"]
-
-  # [[webhooks.subscriptions]]
-  # uri = "/webhooks/shop/redact"
-  # compliance_topics = ["shop/redact"]
+[app_proxy]
+url = "https://shopify.dev/apps/default-app-home"
+subpath = "chat-api"
+prefix = "apps"

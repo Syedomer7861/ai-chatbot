@@ -1,14 +1,18 @@
 import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
-import { syncPolicies } from "../models/knowledge.server";
+import { syncPolicies, syncProducts, syncBlogs } from "../models/knowledge.server";
 import db from "../db.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { session, admin } = await authenticate.admin(request);
   const shop = session.shop;
 
-  // Trigger Policy Sync
-  await syncPolicies(admin, shop);
+  // Trigger Syncs
+  await Promise.all([
+    syncPolicies(admin, shop),
+    syncProducts(admin, shop),
+    syncBlogs(admin, shop),
+  ]);
 
   // Update Last Synced
   await db.appSettings.update({

@@ -41,5 +41,3 @@ When ready for production:
 2. Update the **App URL** and **Redirection URLs** in your Shopify Partner Dashboard.
 3. Submit for review!
 
----
-*Built with Antigravity 2026*

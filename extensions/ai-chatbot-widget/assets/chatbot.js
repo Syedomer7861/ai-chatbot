@@ -71,14 +71,25 @@ class ChatbotWidget extends HTMLElement {
     const typing = this.addTypingIndicator();
     
     try {
-      const response = await fetch('/apps/chat-api/chat', { // Assuming app proxy or direct public API
+      const response = await fetch('/apps/chat-api/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text, shop: this.getAttribute('data-shop') })
       });
       const data = await response.json();
       typing.remove();
-      this.addMessage(data.response || "I'm sorry, I encountered an error.", 'bot');
+      
+      if (data.response) {
+        this.addMessage(data.response, 'bot');
+        if (data.products && data.products.length > 0) {
+          this.addProducts(data.products);
+        }
+        if (data.suggestions && data.suggestions.length > 0) {
+          this.addSuggestions(data.suggestions);
+        }
+      } else {
+        this.addMessage("I'm sorry, I encountered an error.", 'bot');
+      }
     } catch (err) {
       typing.remove();
       this.addMessage("I'm sorry, I'm having trouble connecting right now.", 'bot');
@@ -87,10 +98,64 @@ class ChatbotWidget extends HTMLElement {
 
   addMessage(text, sender) {
     const messages = this.shadowRoot.querySelector('.chatbot-messages');
+    
+    // Remove existing suggestions if any
+    const existingSuggestions = messages.querySelector('.suggestions-container');
+    if (existingSuggestions) existingSuggestions.remove();
+
     const div = document.createElement('div');
     div.className = `message ${sender}`;
-    div.textContent = text;
+    
+    if (sender === 'bot' && window.marked) {
+      div.innerHTML = window.marked.parse(text);
+    } else {
+      div.textContent = text;
+    }
+    
     messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  addSuggestions(suggestions) {
+    const messages = this.shadowRoot.querySelector('.chatbot-messages');
+    const container = document.createElement('div');
+    container.className = 'suggestions-container';
+    
+    suggestions.forEach(text => {
+      const chip = document.createElement('button');
+      chip.className = 'suggestion-chip';
+      chip.textContent = text;
+      chip.addEventListener('click', () => {
+        this.shadowRoot.querySelector('input').value = text;
+        this.sendMessage();
+      });
+      container.appendChild(chip);
+    });
+    
+    messages.appendChild(container);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  addProducts(products) {
+    const messages = this.shadowRoot.querySelector('.chatbot-messages');
+    const container = document.createElement('div');
+    container.className = 'product-cards-container';
+    
+    products.forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <img src="${product.featuredImage || ''}" alt="${product.title}" />
+        <div class="product-info">
+          <h4>${product.title}</h4>
+          <p>${product.priceRangeV2?.minVariantPrice?.amount} ${product.priceRangeV2?.minVariantPrice?.currencyCode}</p>
+          <a href="/products/${product.handle}" class="view-btn">View Product</a>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+    
+    messages.appendChild(container);
     messages.scrollTop = messages.scrollHeight;
   }
 

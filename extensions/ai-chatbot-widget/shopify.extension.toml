@@ -3,4 +3,5 @@ api_version = "2025-10"
 [[extensions]]
 handle = "ai-chatbot-widget"
 name = "AI Chatbot"
+uid = "e1f66405-00e9-0416-264d-4e3191293f8c2533a990"
 type = "theme"

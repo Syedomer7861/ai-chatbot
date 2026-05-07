@@ -16,17 +16,14 @@ Empower Shopify merchants to increase conversion and reduce support overhead by 
 
 ### Active
 
-- [ ] **Embedded App Foundation**: OAuth authentication, Shopify App Bridge integration, and Polaris-based admin UI.
-- [ ] **Storefront Widget**: Theme app extension that injects a customizable chat widget without code edits.
-- [ ] **Knowledge Ingestion**: Automatic syncing of Shopify products, collections, pages, and policies.
-- [ ] **AI Response Engine**: RAG-based answer generation using Shopify data, with fallback "Capture Lead" flow.
-- [ ] **Merchant Dashboard**: Settings for brand/tone, conversation logs, analytics, and knowledge source selection.
-- [ ] **Shopify Billing**: Integration with Shopify Billing API for free and paid plans.
-- [ ] **Review Readiness**: Compliance with Shopify App Store requirements, including demo credentials and screencast prep.
+- [x] **Phase 4: Billing, Analytics & Compliance**: Subscription tiers, ROI stats, and Shopify review prep.
+- [x] **Phase 5: Premium Interactivity & UI**: Markdown support, Product Cards, and Quick Replies (Manifest AI style).
+- [x] **Phase 6: Advanced Knowledge & CRM**: Custom FAQ training, Blog sync, and Klaviyo/Marketing integration.
+- [x] **Phase 7: Launch Readiness**: GDPR compliance, mandatory webhooks, and App Store submission audit.
 
 ### Out of Scope
 
-- **Multi-language Auto-translation**: Deferred to future milestones for MVP simplicity.
+- **Multi-language Auto-translation**: Deferred to post-launch for MVP simplicity.
 - **Human Live-Chat Routing**: Out of scope for MVP; focus is on autonomous AI.
 - **Complex Order Actions**: (e.g., cancelling an order inside chat) Deferred to post-MVP.
 - **Voice Chat**: Explicitly excluded for MVP.

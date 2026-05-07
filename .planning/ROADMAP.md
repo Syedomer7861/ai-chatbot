@@ -10,6 +10,9 @@ This roadmap takes us from a blank slate to a review-ready Shopify AI Chatbot ap
 - [ ] **Phase 2: Storefront Widget & Data Sync** - Build the Theme Extension widget and background knowledge ingestion.
 - [ ] **Phase 3: AI Engine & Admin Dashboard** - Connect the LLM with store data and build the settings/logs UI.
 - [ ] **Phase 4: Billing, Analytics & Compliance** - Implement subscription plans, basic stats, and prepare for Shopify review.
+- [ ] **Phase 5: Premium Interactivity & UI** - Upgrade widget with Markdown, Product Cards, and interactive Quick Replies.
+- [ ] **Phase 6: Advanced Knowledge & CRM** - Support custom FAQ training, Blog sync, and Klaviyo lead capture.
+- [ ] **Phase 7: Launch Readiness & Optimization** - Refine billing tiers, perform GDPR audit, and create reviewer demo tools.
 
 ## Phase Details
 
@@ -63,6 +66,41 @@ This roadmap takes us from a blank slate to a review-ready Shopify AI Chatbot ap
 **Plans**: 1 plan
 - [ ] 04-01: Implement Shopify Billing API and Analytics aggregation.
 
+### Phase 5: Premium Interactivity & UI
+**Goal**: Elevate the chat experience to "Manifest AI" standards with rich media and interactive elements.
+**Depends on**: Phase 3
+**Requirements**: [UI-01, UI-02, UI-03]
+**Success Criteria**:
+  1. Chatbot correctly renders Markdown (bold, lists, links).
+  2. Products mentioned by AI are displayed as clickable rich cards with images/prices.
+  3. "Quick Reply" chips appear for common queries (e.g., "Best Sellers", "Order Status").
+**Plans**: 2 plans
+- [ ] 05-01: Integrate marked.js and implement Product Card components in Shadow DOM.
+- [ ] 05-02: Build "Quick Reply" chip system and dynamic suggestion logic.
+
+### Phase 6: Advanced Knowledge & CRM
+**Goal**: Expand the bot's intelligence beyond just product data and capture leads.
+**Depends on**: Phase 5
+**Requirements**: [KNWL-03, LEAD-01, LEAD-02]
+**Success Criteria**:
+  1. Merchant can add custom Q&A pairs in the Admin dashboard.
+  2. Bot can answer questions based on Blog posts.
+  3. Captured leads are automatically synced to Klaviyo/Email.
+**Plans**: 2 plans
+- [ ] 06-01: Build Custom Knowledge & Blog Sync engine.
+- [ ] 06-02: Implement Klaviyo/Marketing integration for lead capture.
+
+### Phase 7: Launch Readiness & Optimization
+**Goal**: Final polish for Shopify App Store submission.
+**Depends on**: Phase 6
+**Requirements**: [COMP-01, COMP-02, BILL-02]
+**Success Criteria**:
+  1. GDPR mandatory webhooks are fully implemented and tested.
+  2. Subscription tiers (Free vs Pro) are correctly enforced.
+  3. "Demo Mode" toggle allows reviewers to see premium features without a live store.
+**Plans**: 1 plan
+- [ ] 07-01: Final compliance audit, GDPR webhooks, and Reviewer Demo tool.
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -71,6 +109,9 @@ This roadmap takes us from a blank slate to a review-ready Shopify AI Chatbot ap
 | 2. Storefront & Sync | 0/2 | Not started | - |
 | 3. AI Engine & Dashboard | 0/2 | Not started | - |
 | 4. Billing & Compliance | 0/1 | Not started | - |
+| 5. Premium UI | 0/2 | Not started | - |
+| 6. Advanced Knowledge | 0/2 | Not started | - |
+| 7. Launch Readiness | 0/1 | Not started | - |
 
 ---
 *Roadmap defined: 2026-05-06*
