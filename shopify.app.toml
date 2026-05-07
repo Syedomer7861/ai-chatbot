@@ -1,7 +1,7 @@
 # Master Configuration for CodeCrest_AIChatBot
 client_id = "708b332fafb83cdf9816ec531b2c4e6d"
 name = "CodeCrest_AIChatBot"
-application_url = "https://shopify.dev/apps/default-app-home"
+application_url = "https://project-zic8f.vercel.app"
 embedded = true
 
 [build]
@@ -14,9 +14,9 @@ api_version = "2026-07"
 scopes = "read_products,read_content"
 
 [auth]
-redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]
+redirect_urls = [ "https://project-zic8f.vercel.app/auth/callback" ]
 
 [app_proxy]
-url = "https://shopify.dev/apps/default-app-home"
+url = "https://project-zic8f.vercel.app"
 subpath = "chat-api"
 prefix = "apps"

@@ -1,5 +1,13 @@
 {
+  "version": 2,
   "buildCommand": "prisma generate && npm run build",
   "installCommand": "npm install",
+  "outputDirectory": "build/client",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.js"
+    }
+  ],
   "regions": ["cle1"]
 }
