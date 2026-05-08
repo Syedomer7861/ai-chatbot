@@ -1,23 +1,25 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
-import { json } from "react-router";
+import { authenticate } from "../shopify.server";
 import { getActiveQuiz, saveQuizResult } from "../models/quiz.server";
+import { generateQuizRecommendations } from "../models/quiz.server";
 import db from "../db.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const shop = url.searchParams.get("shop");
+  const { session } = await authenticate.public.appProxy(request);
 
-  if (!shop) {
-    return json({ error: "Shop parameter required" }, { status: 400 });
+  if (!session) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
+
+  const shop = session.shop;
 
   const quiz = await getActiveQuiz(shop);
 
   if (!quiz) {
-    return json({ quiz: null, message: "No active quiz found" });
+    return new Response(JSON.stringify({ quiz: null, message: "No active quiz found" }));
   }
 
-  return json({
+  return new Response(JSON.stringify({
     quiz: {
       id: quiz.id,
       title: quiz.title,
@@ -29,18 +31,71 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         options: q.options,
       })),
     },
-  });
+  }));
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const data = await request.json();
-  const { quizId, answers, email, shop } = data;
+  const { session } = await authenticate.public.appProxy(request);
 
-  if (!quizId || !answers || !shop) {
-    return json({ error: "Missing required fields" }, { status: 400 });
+  if (!session) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
 
-  const recommendedProducts = await getProductRecommendations(shop, answers);
+  const shop = session.shop;
+
+  const data = await request.json();
+  const { quizId, answers, email } = data;
+
+  if (!quizId || !answers) {
+    return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
+  }
+
+  const quiz = await db.quiz.findFirst({
+    where: { id: quizId, shop },
+    include: { questions: { orderBy: { order: "asc" } } },
+  });
+
+  if (!quiz) {
+    return new Response(JSON.stringify({ error: "Quiz not found" }), { status: 404 });
+  }
+
+  const knowledgeItems = await db.knowledgeItem.findMany({
+    where: { shop, type: "PRODUCT" },
+  });
+
+  const availableProducts: { id: string; title: string; description: string; price: number; handle: string; tags?: string[] }[] =
+    knowledgeItems
+      .map((item) => {
+        try {
+          const metadata = JSON.parse(item.metadata || "{}");
+          return {
+            id: item.sourceId,
+            title: String(metadata.title || ""),
+            description: String(item.content || ""),
+            price: Number(metadata.price || 0),
+            handle: String(metadata.handle || ""),
+            tags: String(metadata.tags || "").split(",").map((t: string) => t.trim()).filter(Boolean),
+          };
+        } catch {
+          return null;
+        }
+      })
+      .filter((p): p is NonNullable<typeof p> => p !== null);
+
+  const formattedAnswers = answers.map((a: any) => {
+    const question = quiz.questions.find((q: any) => q.id === a.questionId);
+    return {
+      question: question?.question || "Unknown question",
+      selectedOptions: a.selectedOptions,
+    };
+  });
+
+  const { products: recommendedProducts, reasoning } = await generateQuizRecommendations(
+    quiz.title,
+    quiz.description || "",
+    formattedAnswers,
+    availableProducts
+  );
 
   const result = await saveQuizResult(quizId, {
     email,
@@ -48,51 +103,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     products: recommendedProducts.map((p: any) => p.id),
   });
 
-  return json({
+  return new Response(JSON.stringify({
     success: true,
     resultId: result.id,
-    products: recommendedProducts,
-  });
+    products: recommendedProducts.map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      handle: p.handle,
+      price: p.price,
+      featuredImage: p.featuredImage,
+      currencyCode: "USD",
+    })),
+    reasoning,
+  }));
 };
-
-async function getProductRecommendations(shop: string, answers: { questionId: string; selectedOptions: string[] }[]) {
-  const allAnswers = answers.flatMap((a) => a.selectedOptions);
-
-  const knowledgeItems = await db.knowledgeItem.findMany({
-    where: {
-      shop,
-      type: "product",
-    },
-    take: 20,
-  });
-
-  const products = knowledgeItems
-    .map((item) => {
-      try {
-        return { id: item.sourceId, ...JSON.parse(item.content) };
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
-
-  if (allAnswers.some((a) => a.toLowerCase().includes("gift"))) {
-    return products.filter((p: any) => p.tags?.some((t: string) => t.toLowerCase().includes("gift") || t.toLowerCase().includes("present"))).slice(0, 5) ||
-      products.slice(0, 5);
-  }
-
-  if (allAnswers.some((a) => a.toLowerCase().includes("budget") || a.toLowerCase().includes("cheap") || a.toLowerCase().includes("affordable"))) {
-    return [...products].sort((a: any, b: any) => (a.price || 0) - (b.price || 0)).slice(0, 5);
-  }
-
-  if (allAnswers.some((a) => a.toLowerCase().includes("premium") || a.toLowerCase().includes("luxury") || a.toLowerCase().includes("expensive"))) {
-    return [...products].sort((a: any, b: any) => (b.price || 0) - (a.price || 0)).slice(0, 5);
-  }
-
-  if (allAnswers.some((a) => a.toLowerCase().includes("sport") || a.toLowerCase().includes("active") || a.toLowerCase().includes("fitness"))) {
-    return products.filter((p: any) => p.tags?.some((t: string) => t.toLowerCase().includes("sport") || t.toLowerCase().includes("active") || t.toLowerCase().includes("fitness"))).slice(0, 5) ||
-      products.slice(0, 5);
-  }
-
-  return products.slice(0, 5);
-}

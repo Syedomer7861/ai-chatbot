@@ -184,8 +184,8 @@ export default function QuizDashboard() {
               Add this code to your store to display the active quiz widget:
             </p>
             <code style={{ display: "block", background: "#f8f8f8", padding: "12px", borderRadius: "4px", fontSize: "13px" }}>
-              {`<div id="ai-quiz-widget" data-shop="${shop}"></div>`}<br />
-              {`<script src="https://your-app-domain.com/apps/quiz/embed.js" defer></script>`}
+              {`<ai-quiz-widget data-shop="${shop}"></ai-quiz-widget>`}<br />
+              {`<script src="/apps/chat-api/quiz-embed.js" defer></script>`}
             </code>
           </div>
         </ui-card>

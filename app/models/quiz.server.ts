@@ -1,5 +1,8 @@
 import db from "../db.server";
 import type { Quiz, QuizQuestion } from "@prisma/client";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export type QuizWithQuestions = Quiz & {
   questions: QuizQuestion[];
@@ -143,4 +146,76 @@ export async function getQuizStats(shop: string) {
     totalCompletions: totalResults,
     uniqueLeads: uniqueEmails.length,
   };
+}
+
+export async function generateQuizRecommendations(
+  quizTitle: string,
+  quizDescription: string,
+  answers: { question: string; selectedOptions: string[] }[],
+  availableProducts: { id: string; title: string; description: string; price: number; handle: string; tags?: string[] }[]
+): Promise<{ products: typeof availableProducts; reasoning: string }> {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+  const answersText = answers
+    .map((a) => `Q: ${a.question}\nA: ${a.selectedOptions.join(", ")}`)
+    .join("\n\n");
+
+  const productsText = availableProducts
+    .map(
+      (p) =>
+        `ID: ${p.id}\nTitle: ${p.title}\nDescription: ${p.description}\nPrice: ${p.price}\nTags: ${(p.tags || []).join(", ")}`
+    )
+    .join("\n\n---\n\n");
+
+  const prompt = `
+You are a product recommendation engine for a Shopify store.
+Based on the customer's quiz answers, recommend the most relevant products from the catalog.
+
+QUIZ: ${quizTitle}
+${quizDescription ? `Description: ${quizDescription}` : ""}
+
+CUSTOMER ANSWERS:
+${answersText}
+
+AVAILABLE PRODUCTS:
+${productsText}
+
+INSTRUCTIONS:
+1. Analyze the customer's answers to understand their needs/preferences.
+2. Select the 3-5 most relevant products from the catalog.
+3. Return a JSON response with:
+   - "productIds": array of product IDs (from the available products list)
+   - "reasoning": brief explanation of why these products were recommended
+
+RESPONSE FORMAT (valid JSON only):
+{
+  "productIds": ["id1", "id2", "id3"],
+  "reasoning": "Based on your preference for X and Y, we recommend these products..."
+}
+`.trim();
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text().trim();
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonStr = jsonMatch ? jsonMatch[0] : text;
+
+    const parsed = JSON.parse(jsonStr);
+    const recommendedProducts = availableProducts.filter((p) =>
+      (parsed.productIds || []).includes(p.id)
+    );
+
+    return {
+      products: recommendedProducts.length > 0 ? recommendedProducts : availableProducts.slice(0, 5),
+      reasoning: parsed.reasoning || "Here are some products you might like.",
+    };
+  } catch (e) {
+    console.error("Failed to parse AI quiz recommendation:", e);
+    return {
+      products: availableProducts.slice(0, 5),
+      reasoning: "Here are some popular products you might like.",
+    };
+  }
 }
