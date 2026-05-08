@@ -1,0 +1,20 @@
+name = "ai-quiz-widget"
+version = "1.0.0"
+type = "extension"
+
+[targets]
+admin.product-purchase-option.action.render = "admin.product-purchase-option.action.render"
+admin.product.template.render = "admin.product.template.render"
+
+[ui_config]
+points = ["admin.product-purchase-option.action.render", "admin.product.template.render"]
+iframe = true
+
+[themes]
+key = "main"
+
+[capabilities]
+can_access_customer_data = false
+can_fulfill_unsafe_http_requests = false
+publishes_customer_data = false
+uses_data_transfer_apis = false

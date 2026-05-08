@@ -57,3 +57,42 @@ model Lead {
 
   @@index([shop])
 }
+
+model Quiz {
+  id          String          @id @default(uuid())
+  shop        String
+  title       String
+  description String?
+  active      Boolean         @default(true)
+  questions   QuizQuestion[]
+  results     QuizResult[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([shop])
+}
+
+model QuizQuestion {
+  id          String       @id @default(uuid())
+  quizId      String
+  quiz        Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question    String
+  type        String       @default("single") // single, multiple, text
+  options     Json         // [{ text: string, image?: string, productTags?: string[] }]
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+
+  @@index([quizId])
+}
+
+model QuizResult {
+  id           String   @id @default(uuid())
+  quizId       String
+  quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  email        String?
+  answers      Json     // [{ questionId: string, selectedOptions: string[] }]
+  products     Json?    // Recommended product IDs
+  createdAt    DateTime @default(now())
+
+  @@index([quizId])
+}

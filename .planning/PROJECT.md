@@ -20,6 +20,7 @@ Empower Shopify merchants to increase conversion and reduce support overhead by 
 - [x] **Phase 5: Premium Interactivity & UI**: Markdown support, Product Cards, and Quick Replies (Manifest AI style).
 - [x] **Phase 6: Advanced Knowledge & CRM**: Custom FAQ training, Blog sync, and Klaviyo/Marketing integration.
 - [x] **Phase 7: Launch Readiness**: GDPR compliance, mandatory webhooks, and App Store submission audit.
+- [ ] **Phase 8: AI Quiz System**: Interactive product discovery quizzes with AI-powered recommendations.
 
 ### Out of Scope
 

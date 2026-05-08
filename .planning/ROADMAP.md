@@ -101,6 +101,22 @@ This roadmap takes us from a blank slate to a review-ready Shopify AI Chatbot ap
 **Plans**: 1 plan
 - [ ] 07-01: Final compliance audit, GDPR webhooks, and Reviewer Demo tool.
 
+### Phase 8: AI Quiz System (In Progress)
+**Goal**: Interactive product discovery quizzes that recommend products based on customer answers.
+**Depends on**: Phase 3
+**Requirements**: [QUIZ-01, QUIZ-02, QUIZ-03]
+**Success Criteria**:
+  1. Merchant can create multiple quizzes with questions and answer options.
+  2. Quiz widget appears on storefront and collects customer answers.
+  3. Products are recommended based on quiz answers with lead capture.
+  4. Quiz results and analytics visible in admin dashboard.
+**Plans**: 5 plans
+- [x] 08-01: Create Quiz database models (Quiz, QuizQuestion, QuizResult).
+- [x] 08-02: Build Quiz management dashboard UI in admin.
+- [ ] 08-03: Create storefront quiz widget with embed code.
+- [ ] 08-04: Build AI-powered product recommendation engine based on answers.
+- [ ] 08-05: Add quiz analytics and lead tracking.
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -112,7 +128,8 @@ This roadmap takes us from a blank slate to a review-ready Shopify AI Chatbot ap
 | 5. Premium UI | 0/2 | Not started | - |
 | 6. Advanced Knowledge | 0/2 | Not started | - |
 | 7. Launch Readiness | 0/1 | Not started | - |
+| 8. AI Quiz System | 2/5 | In Progress | - |
 
 ---
 *Roadmap defined: 2026-05-06*
-*Last updated: 2026-05-06 after initialization*
+*Last updated: 2026-05-07 after Phase 8 initialization*
